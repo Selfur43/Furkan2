@@ -14,25 +14,22 @@ products = ['Metal_P_1', 'Metal_P_2', 'Metal_P_3']
 workdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
 # Dummy data for setup times and error rates (replace with actual data)
-setup_times = {(i, j, k, p, d): np.random.randint(10, 30) for i in operators for j in machines for k in shifts for p in products for d in workdays}
+setup_times = {(i, j, k, p, d): np.random.randint(15, 25) for i in operators for j in machines for k in shifts for p in products for d in workdays}
 error_rates = {(i, j, k, p, d): np.random.uniform(0.01, 0.1) for i in operators for j in machines for k in shifts for p in products for d in workdays}
-skill_fit = {(i, j): np.random.uniform(0.8, 1.2) for i in operators for j in machines}
+skill_fit = {(i, j): np.random.uniform(55, 75) for i in operators for j in machines}
 
 # Constraints and weights
 max_daily_work_minutes = 600
 daily_break_minutes = 60
-weight_setup = 1.0
-weight_error = 1.0
+weight_setup = 1.8
+weight_error = 1.2
 weight_shift_balance = 0.1
-weight_workload_balance = 0.05
-penalty_factor = 1.5
 
-# Error rates'in dakikaya dönüştürülmesi
-error_times = {key: error_rate * setup_times[key] for key, error_rate in error_rates.items()}
+
 
 # Skill fit'in normalizasyonu
 skill_min, skill_max = min(skill_fit.values()), max(skill_fit.values())
-normalized_skill_fit = {key: (value - skill_min) / (skill_max - skill_min) for key, value in skill_fit.items()}
+normalized_skill_fit = {key: (value) / (skill_max ) for key, value in skill_fit.items()}
 
 
 # Decision variables
@@ -51,13 +48,7 @@ model += (
         (weight_setup * setup_times[i, j, k, p, d] + weight_error * error_rates[i, j, k, p, d] - (0.05 * normalized_skill_fit[i, j]* max_daily_work_minutes)) * x[i][j][k][p][d]
         for i in operators for j in machines for k in shifts for p in products for d in workdays
     )
-    + weight_shift_balance * pulp.lpSum(dev_shift_pos[k] + dev_shift_neg[k] for k in shifts)
-    + weight_workload_balance * pulp.lpSum(dev_workload_pos[i] + dev_workload_neg[i] for i in operators)
-    + penalty_factor * pulp.lpSum(
-        (error_rates[i, j, k, p, d] + setup_times[i, j, k, p, d]  - (0.05 * normalized_skill_fit[i, j]* max_daily_work_minutes)) * x[i][j][k][p][d]
-        for i in operators for j in machines for k in shifts for p in products for d in workdays
     )
-)
 
 # Constraints
 for i in operators:
