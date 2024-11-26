@@ -8,7 +8,7 @@ import plotly.express as px
 
 # Parameters
 operators = ['O_1', 'O_2', 'O_3', 'O_4', 'O_5', 'O_6', 'O_7', 'O_8', 'O_9', 'O_10']
-machines = ['Argon_1', 'Argon_2', 'Argon_3', 'Argon_4', 'Argon_5', 'Argon_6', 'MIG_7', 'MIG_8', 'MIG_9', 'MIG_10' ]
+machines = ['Argon' , 'Mıg']
 shifts = ['Morning', 'Evening']
 products = ['P_1', 'P_2', 'P_3', 'P_4', 'P_5', 'P_6']
 workdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
