@@ -25,7 +25,11 @@ weight_setup = 1.8
 weight_error = 1.2
 weight_shift_balance = 0.1
 
+# setup_max değerini belirleyelim
+setup_max = max(setup_times.values())
 
+# Kurulum sürelerini normalize etme işlemi
+normalized_setup_times = {key: value / setup_max for key, value in setup_times.items()}
 
 # Skill fit'in normalizasyonu
 skill_min, skill_max = min(skill_fit.values()), max(skill_fit.values())
@@ -45,7 +49,7 @@ model = pulp.LpProblem("Operator_Assignment", pulp.LpMinimize)
 # Objective function with balanced weights for minimizing setup times and error rates
 model += (
     pulp.lpSum(
-        (weight_setup * setup_times[i, j, k, p, d] + weight_error * error_rates[i, j, k, p, d] - (0.05 * normalized_skill_fit[i, j]* max_daily_work_minutes)) * x[i][j][k][p][d]
+        (weight_setup * normalized_setup_times[i, j, k, p, d] + weight_error * error_rates[i, j, k, p, d] - (0.05 * normalized_skill_fit[i, j]* max_daily_work_minutes)) * x[i][j][k][p][d]
         for i in operators for j in machines for k in shifts for p in products for d in workdays
     )
     )
